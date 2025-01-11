@@ -1,0 +1,82 @@
+.link {
+  display: flex;
+  padding: 0 0.0625rem;
+  text-decoration: none;
+  cursor: pointer;
+  color: red;
+  height: 3.5rem;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid transparent;
+  /* Typography styles would need to be defined separately */
+}
+
+@media (min-width: 1024px) {
+  .link {
+    padding: 0 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .link {
+    padding: 0 0.25rem;
+  }
+}
+
+@media (max-width: 330px) {
+  .link {
+    padding: 0 0.0625rem;
+  }
+}
+
+.linkActive {
+  display: flex;
+  padding: 0 0.0625rem;
+  text-decoration: none;
+  cursor: pointer;
+  height: 3.5rem;
+  justify-content: center;
+  align-items: center;
+  color: yellow;
+  border-bottom: 2px solid yellow;
+  /* Typography styles would need to be defined separately */
+}
+
+@media (min-width: 1024px) {
+  .linkActive {
+    padding: 0 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .linkActive {
+    padding: 0 0.25rem;
+  }
+}
+
+@media (max-width: 330px) {
+  .linkActive {
+    padding: 0 0.0625rem;
+  }
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 30px;
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .inner {
+    padding: 0 12px;
+    width: 100%;
+  }
+}

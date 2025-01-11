@@ -1,14 +1,15 @@
 import { Redirect, Route, Switch } from "wouter";
 import { Open, Closed, InProgress } from "./pages";
+import { RoutesData } from "./constants";
 
 const Routes = () => {
   return (
     <>
     <Switch>
-      <Route path="/" component={() => <Redirect to="/open" />} />
-      <Route path="/open" component={Open} />
-      <Route path="/closed" component={Closed} />
-      <Route path="/in-progress" component={InProgress} />
+      <Route path="/" component={() => <Redirect to={RoutesData.OPEN} />} />
+      <Route path={RoutesData.OPEN} component={Open} />
+      <Route path={RoutesData.CLOSED} component={Closed} />
+      <Route path={RoutesData.IN_PROGRESS} component={InProgress} />
     </Switch>
     </>
   )
