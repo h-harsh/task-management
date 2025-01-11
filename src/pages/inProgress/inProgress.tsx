@@ -8,8 +8,7 @@ const InProgress = () => {
 
   return (
     <div>
-      <h1 >InProgress</h1>
-      <Table tasks={tasks} />
+      <Table tasks={tasks} currentStatus='IN_PROGRESS' />
     </div>
   );
 }

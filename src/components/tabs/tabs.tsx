@@ -1,4 +1,4 @@
-import {  useLocation, useParams } from "wouter";
+import { useLocation } from "wouter";
 import { Tabs as MantineTabs } from '@mantine/core';
 
 const ROUTES_DATA = [
@@ -20,23 +20,26 @@ const ROUTES_DATA = [
 ]
 
 const Tabs = () => {
-    const { tabValue } = useParams();
-    const [, setLocation] = useLocation();
+    const [location, setLocation] = useLocation();
+    const currentTab = location.split('/')[1] || 'open';
 
-  return (
-      <MantineTabs
-          value={tabValue}
-          onChange={(value) => setLocation(`/${value}`)}
-      >
-          <MantineTabs.List>
-              {
-                  ROUTES_DATA.map((route) => (
-                      <MantineTabs.Tab key={route.key} value={route.key}>{route.label}</MantineTabs.Tab>
-                  ))
-              }
-          </MantineTabs.List>
-      </MantineTabs>
-  );
+    return (
+        <MantineTabs
+            value={currentTab}
+            onChange={(value) => setLocation(`/${value}`)}
+        >
+            <MantineTabs.List>
+                {ROUTES_DATA.map((route) => (
+                    <MantineTabs.Tab 
+                        key={route.key} 
+                        value={route.key}
+                    >
+                        {route.label}
+                    </MantineTabs.Tab>
+                ))}
+            </MantineTabs.List>
+        </MantineTabs>
+    );
 };
 
 export default Tabs;

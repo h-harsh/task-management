@@ -8,8 +8,7 @@ const Closed = () => {
 
   return (
     <div>
-      <h1 >Closed</h1>
-      <Table tasks={tasks} />
+      <Table tasks={tasks} currentStatus='CLOSED' />
     </div>
   );
 }

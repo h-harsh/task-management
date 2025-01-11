@@ -1,4 +1,3 @@
-import styles from './open.module.css';
 import { Table } from '../../components';
 import { useTasksFetch } from '../../hooks';
 
@@ -10,8 +9,7 @@ const Open = () => {
 
   return (
     <div>
-      <h1 className={styles.title}>Open</h1>
-      <Table tasks={tasks} />
+      <Table tasks={tasks} currentStatus='OPEN' />
     </div>
   );
 };
