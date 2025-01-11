@@ -7,7 +7,9 @@ import type {
     IFetchTaskDetailsRequest, 
     IFetchTaskDetailsResponse, 
     IUpdateTaskCommentRequest, 
-    IUpdateTaskCommentResponse 
+    IUpdateTaskCommentResponse,
+    IFetchTaskCountRequest,
+    IFetchTaskCountResponse
 } from '../types';
 
 import mockData from './smallData.json';
@@ -87,5 +89,16 @@ function updateTaskComment({ id, comment }: IUpdateTaskCommentRequest): Promise<
     });
 }
 
+// Add this function
+function fetchTaskCounts({ statuses }: IFetchTaskCountRequest): Promise<IFetchTaskCountResponse> {
+    return new Promise((resolve) => {
+        const counts = statuses.map(status => ({
+            status,
+            count: tasks.filter(task => task.status === status).length
+        }));
+        
+        resolve({ counts });
+    });
+}
 
-export { fetchTasks, updateTaskStatus, fetchTaskDetails, updateTaskComment };
+export { fetchTasks, updateTaskStatus, fetchTaskDetails, updateTaskComment, fetchTaskCounts };

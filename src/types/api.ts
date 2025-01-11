@@ -57,4 +57,17 @@ interface IUpdateTaskCommentRequest {
   comment: string;
 }
 
-export type { ITaskPage, IFetchTasksResponse, IUpdateTaskStatusResponse, IFetchTaskDetailsResponse, IUpdateTaskCommentResponse, IFetchTasksRequest, IUpdateTaskStatusRequest, IFetchTaskDetailsRequest, IUpdateTaskCommentRequest };
+interface ITaskCount {
+    status: ITaskStatus;
+    count: number;
+}
+
+interface IFetchTaskCountResponse {
+    counts: ITaskCount[];
+}
+
+interface IFetchTaskCountRequest {
+    statuses: ITaskStatus[];
+}
+
+export type { ITaskPage, IFetchTasksResponse, IUpdateTaskStatusResponse, IFetchTaskDetailsResponse, IUpdateTaskCommentResponse, IFetchTasksRequest, IUpdateTaskStatusRequest, IFetchTaskDetailsRequest, IUpdateTaskCommentRequest, ITaskCount, IFetchTaskCountResponse, IFetchTaskCountRequest };

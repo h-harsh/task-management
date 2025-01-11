@@ -1,10 +1,11 @@
 import {useTaskStore} from '../store';
-import { fetchTasks, updateTaskStatus, fetchTaskDetails, updateTaskComment } from './backend';
+import { fetchTasks, updateTaskStatus, fetchTaskDetails, updateTaskComment, fetchTaskCounts } from './backend';
 import type {
     IFetchTasksRequest,
     IUpdateTaskStatusRequest,
     IFetchTaskDetailsRequest, 
-    IUpdateTaskCommentRequest 
+    IUpdateTaskCommentRequest,
+    IFetchTaskCountRequest
 } from '../types/api';
 
  const fetchTasksHandler = (request: IFetchTasksRequest): void => {
@@ -99,4 +100,31 @@ import type {
         });
 };
 
-export { fetchTasksHandler, updateTaskStatusHandler, fetchTaskDetailsHandler, updateTaskCommentHandler };
+const fetchTaskCountsHandler = (request: IFetchTaskCountRequest): void => {
+    const set = useTaskStore.getState().setFetchTaskCountState;
+
+    // Set loading state
+    set({ status: 'loading', data: null, loading: true, error: null });
+
+    fetchTaskCounts(request)
+        .then((response) => {
+            // Set success state
+            set({ 
+                status: 'success', 
+                data: response, 
+                loading: false, 
+                error: null 
+            });
+        })
+        .catch((error) => {
+            // Set error state
+            set({
+                status: 'error',
+                data: null,
+                loading: false,
+                error: (error as Error).message || 'Failed to fetch task counts'
+            });
+        });
+};
+
+export { fetchTasksHandler, updateTaskStatusHandler, fetchTaskDetailsHandler, updateTaskCommentHandler, fetchTaskCountsHandler };
