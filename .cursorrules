@@ -1,0 +1,162 @@
+# Web-Based Task Management Tool
+
+**Objective:**
+
+Design and implement a simplified version of a web-based task management tool, focusing on speed of navigation and keyboard-driven UX.
+
+**Functional Requirements:**
+
+1. **Task Views (3 Tabs):**
+
+ Each view contains:
+
+- Task table displaying tasks by status : **Open**, **In Progress**, and **Closed**.
+- Each tab displays a count of the tasks for its corresponding status.
+- The selected tab should persist after a page reload.
+- Open tab is default.
+- Retains sorting and search when switching tabs
+1. **Task Table Features:**
+- Tasks are displayed in a table format based on the selected tab.
+- Table columns: **Priority**, **ID**, **Status**, **Labels**, **Name**, **Due Date**, **Created At** and **Assignee**.
+- Support infinite scroll pagination within the table.
+- Keyboard support in Table:
+    - Up/Down Arrow Keys: Move through table tasks list.
+    - Enter Key: Open the task in a focus mode(modal view).
+- Global controls(To be retained across states) :
+    - Sorting:
+        - Sorting should be applied based on the Created At.
+        - Sorting choice should persist after a page reload.
+        - Should have an option to clear sorting.
+    - Search:
+        - Search should be applied based on Name.
+        - Search input should persist after a page reload.
+        - Should have an option to clear search.
+- When the status is changed:
+    - The task should be removed from the current tab's table view.
+    - The task should appear in the table of the tab corresponding to the new status when tabs are switched.
+1. **Task in Focus Mode (Modal View):**
+- When a task is clicked or pressed with Enter, a modal opens with the task details and associated comment.
+- Actions in Modal:
+    - Tasks status can be changed to **Open,** **In Progress** or **Closed**, and vice versa.
+    - A confirmation modal asks the user for a comment before the status of a task is changed. This comment is required as part of the status update action.
+    - The comment is task-specific. Can update the comment if it already exists with a new comment.
+- Keyboard Support in Modal:
+    - Right/Left Arrow Keys: Navigate between tasks in focus mode.
+    - Number Keys:
+        - 1: Change task status to **Open**.
+        - 2: Change task status to **In Progress**.
+        - 3: Change task status to **Closed**.
+- When the status is changed:
+    - Task remains in modal view during navigation
+    - Task remains visible when traversing in current tab
+    - Task is removed from the background table, so that it can land in the correct tab.
+
+**Sample API contracts: (You can design your own, but do not offload things to APIs for core tasks)**
+
+// GET /api/tasks
+
+Request:
+
+{
+
+"status": "OPEN",
+
+"page": {
+
+"size": 100,
+
+"offset": 0
+
+}
+
+}
+
+Response:
+
+{
+
+"tasks": [
+
+{
+
+"id": 1,
+
+"name": "File upload feature",
+
+"labels": ["backend", "urgent"],
+
+"status": "OPEN",
+
+"priority": "HIGH",
+
+"assignee": "john@company.com",
+
+"due_date": "2024-02-01T00:00:00Z",
+
+"created_at": "2024-01-15T13:10:13Z",
+
+"updated_at": "2024-01-15T13:10:13Z",
+
+"comment": "Initial task creation"
+
+}
+
+],
+
+"pagination": {
+
+"total": 156,
+
+"has_next": true,
+
+"page_size": 100,
+
+"offset": 0
+
+}
+
+}
+
+---
+
+**Tech Guidelines:**
+
+- Can use any tech stack of your choice. **Next.js**/**React.js** is a preferred option but not mandatory.
+- Mock APIs with static data and JavaScript promises. No need to create a backend.
+- Use any relevant approach of your choice for managing application state.
+- Can make use of any relevant libraries of your choice for UI/UX.
+
+**Submission Deadline:**
+
+**48 hours** from start of implementation.
+
+**Submission Guidelines:**
+
+- Provide a link to the hosted application.
+- Include a repository link with the source code.
+- Readme document can include:
+    - Basic System Design.
+    - Steps to run the application locally.
+    - Backend API contracts and any other assumptions.
+
+**Evaluation Criteria:**
+
+**Fast and smooth UX**:
+
+- Fast navigation and actions.
+- Keyboard navigation must work seamlessly without requiring clicks to reset focus with handling edge cases.
+
+**Functionality**:
+
+- All features listed in functional requirements must be implemented.
+
+**Minimalistic Design**:
+
+- The design should be clean and focus should be on functionality, avoiding unnecessary elements.
+
+**Bonus Features**:
+
+- Add column-wise search (Needs to be done in frontend)
+- Add column-wise sorting (Needs to be done in frontend)
+- Persist additional features (like column-wise search/sorting) after a page reload.
+- And anything else that you can think of that can make this better.
