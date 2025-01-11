@@ -1,13 +1,15 @@
 // import viteLogo from '/vite.svg'
 import './App.css'
+import '@mantine/core/styles.css';
 
-function App() {
+import { MantineProvider } from '@mantine/core';
 
+export default function App() {
   return (
-    <>
-      <h1>Hello world</h1>
-    </>
-  )
+    <MantineProvider>
+      <div>
+        <h1>Hello world</h1>
+      </div>
+    </MantineProvider>
+  );
 }
-
-export default App
