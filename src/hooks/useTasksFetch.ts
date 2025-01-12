@@ -22,7 +22,6 @@ const useTasksFetch = (status: ITaskStatus) => {
     });
   }, []);
 
-  // Reset state when status changes
   useEffect(() => {
     setAllTasks([]);
     setCurrentPage(0);
@@ -48,7 +47,6 @@ const useTasksFetch = (status: ITaskStatus) => {
     }
   }, [status, fetchTask]);
 
-  // Update allTasks when new data arrives
   useEffect(() => {
     if (data?.tasks) {
       if (currentPage === 0) {
