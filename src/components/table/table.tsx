@@ -175,14 +175,14 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
 
         // Apply user-selected sorting if any
         if (sortConfig.key && sortConfig.direction) {
-            filtered.sort((a: any, b: any) => {
-                const aValue = a[sortConfig.key];
-                const bValue = b[sortConfig.key];
+            filtered.sort((a: ITask, b: ITask) => {
+                const aValue = a[sortConfig.key as keyof ITask];
+                const bValue = b[sortConfig.key as keyof ITask];
 
                 // Handle dates
                 if (sortConfig.key === 'created_at' || sortConfig.key === 'due_date') {
-                    const aTime = new Date(aValue).getTime();
-                    const bTime = new Date(bValue).getTime();
+                    const aTime = new Date(aValue as string).getTime();
+                    const bTime = new Date(bValue as string).getTime();
                     return sortConfig.direction === 'asc'
                         ? aTime - bTime
                         : bTime - aTime;
@@ -205,8 +205,12 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                 }
 
                 // Handle numbers and other types
-                if (aValue < bValue) {return sortConfig.direction === 'asc' ? -1 : 1;}
-                if (aValue > bValue) {return sortConfig.direction === 'asc' ? 1 : -1;}
+                const numA = Number(aValue);
+                const numB = Number(bValue);
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return sortConfig.direction === 'asc' ? numA - numB : numB - numA;
+                }
+
                 return 0;
             });
         }

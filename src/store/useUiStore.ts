@@ -36,7 +36,7 @@ const getInitialSearchState = (): SearchFilter => {
             return parsed;
         }
     } catch (error) {
-        console.error('Error parsing search filter:', error);
+        // console.error('Error parsing search filter:', error);
     }
     return { column: 'name', value: '' };
 };
