@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { TABLE_HEADERS } from "../../constants/table";
-import { Table as MantineTable, LoadingOverlay, Skeleton, Loader } from "@mantine/core";
+import { Table as MantineTable, LoadingOverlay, Skeleton, Loader, ActionIcon, Group, Flex } from "@mantine/core";
 import { ITask, ITaskStatus } from "../../types";
 import { toTitleCase } from "../../utils";
 import ActionModal from "../actionModal/actionModal";
 import { useTasksFetch } from "../../hooks";
 import { useIntersection } from '@mantine/hooks';
+import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
 
 const BUFFER_THRESHOLD = 0.5;
 
@@ -26,6 +27,10 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
     const isLoadingRef = useRef(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const lastScrollPositionRef = useRef(0);
+    const [sortConfig, setSortConfig] = useState<{
+        key: string | null;
+        direction: 'asc' | 'desc' | null;
+    }>({ key: null, direction: null });
 
     const { ref: bottomRef, entry: bottomEntry } = useIntersection({
         threshold: BUFFER_THRESHOLD,
@@ -110,6 +115,36 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         };
     }, [handleKeyDown]);
 
+    const handleSort = (key: string) => {
+        setSortConfig(current => {
+            if (current.key === key) {
+                if (current.direction === 'asc') {
+                    return { key, direction: 'desc' };
+                }
+                if (current.direction === 'desc') {
+                    return { key: null, direction: null };
+                }
+            }
+            return { key, direction: 'asc' };
+        });
+    };
+
+    const sortedTasks = useMemo(() => {
+        if (!sortConfig.key || !sortConfig.direction) {
+            return tasks;
+        }
+
+        return [...tasks].sort((a: any, b: any) => {
+            if (a[sortConfig.key] < b[sortConfig.key]) {
+                return sortConfig.direction === 'asc' ? -1 : 1;
+            }
+            if (a[sortConfig.key] > b[sortConfig.key]) {
+                return sortConfig.direction === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+    }, [tasks, sortConfig]);
+
     if (loading && tasks.length === 0) { return <Loader size="xl" />; }
     if (error) { return <div>Error: {error}</div>; }
 
@@ -131,12 +166,40 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                     <MantineTable.Thead style={{ position: 'sticky', top: 0, background: 'white', zIndex: 1 }}>
                         <MantineTable.Tr>
                             {TABLE_HEADERS.map((header) => (
-                                <MantineTable.Th key={header}>{toTitleCase(header)}</MantineTable.Th>
+                                <MantineTable.Th key={header}>
+                                    <Group gap="xs" justify="space-between" align="center">
+                                        {toTitleCase(header)}
+                                        <Flex direction="column" gap={0}>
+                                            <ActionIcon 
+                                                size="xs" 
+                                                variant="subtle"
+                                                onClick={() => handleSort(header)}
+                                            >
+                                                <IconChevronUp 
+                                                    color={sortConfig.key === header && sortConfig.direction === 'asc' ? 'blue' : '#666'} 
+                                                    size={16} 
+                                                    stroke={3}
+                                                />
+                                            </ActionIcon>
+                                            <ActionIcon 
+                                                size="xs" 
+                                                variant="subtle"
+                                                onClick={() => handleSort(header)}
+                                            >
+                                                <IconChevronDown
+                                                    color={sortConfig.key === header && sortConfig.direction === 'desc' ? 'blue' : '#666'} 
+                                                    size={16} 
+                                                    stroke={3}
+                                                />
+                                            </ActionIcon>
+                                        </Flex>
+                                    </Group>
+                                </MantineTable.Th>
                             ))}
                         </MantineTable.Tr>
                     </MantineTable.Thead>
                     <MantineTable.Tbody>
-                        {tasks.map((task, index) => (
+                        {sortedTasks.map((task, index) => (
                             <MantineTable.Tr 
                                 key={`${task.id}-${index}`}
                                 onClick={() => handleRowClick(task)}
