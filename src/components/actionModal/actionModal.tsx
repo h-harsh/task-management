@@ -1,7 +1,7 @@
 import { Modal, Text, Group, Button, Stack, Select, Textarea, Alert } from '@mantine/core';
 import { ITask } from '../../types';
 import { useState, useEffect } from 'react';
-import { updateTaskStatusHandler, updateTaskCommentHandler } from '../../api/handlers';
+import { updateTaskStatusHandler, updateTaskCommentHandler, fetchTaskCountsHandler } from '../../api/handlers';
 import { useTaskStore } from '../../store/taskStore';
 
 interface ActionModalProps {
@@ -60,6 +60,11 @@ const ActionModal = ({ task, onClose, currentStatus }: ActionModalProps) => {
                     status,
                     comment: comment.trim(),
                     updated_at: new Date().toISOString()
+                });
+
+                // Refresh task counts
+                fetchTaskCountsHandler({ 
+                    statuses: ['OPEN', 'IN_PROGRESS', 'CLOSED'] 
                 });
             } else if (comment.trim()) {
                 updateTaskCommentHandler({
