@@ -20,6 +20,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
     const isLoadingRef = useRef(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const lastScrollPositionRef = useRef(0);
+    const tableRef = useRef<HTMLDivElement>(null);
     
     const { sortConfig, setSortConfig } = useUiStore();
     const searchFilter = useUiStore((state) => state.searchFilter);
@@ -83,7 +84,8 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         setSelectedTask(null);
     };
 
-    const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!tableRef.current?.contains(document.activeElement)) {return;}
         if (tasks.length === 0) {return;}
 
         switch (event.key) {
@@ -109,13 +111,6 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                 break;
         }
     }, [tasks, focusedIndex, handleRowClick]);
-
-    useEffect(() => {
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [handleKeyDown]);
 
     const handleSort = (key: string, direction: 'asc' | 'desc') => {
         const dataKey = keyMap[key];
@@ -215,8 +210,12 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
             <LoadingOverlay visible={loading && tasks.length === 0} />
             
             <div 
-                ref={scrollContainerRef}
+                ref={tableRef}
+                tabIndex={0}
+                role="grid"
+                aria-label="Tasks table"
                 className={classes.tableWrapper}
+                onKeyDown={handleKeyDown}
             >
                 <MantineTable highlightOnHover withTableBorder withColumnBorders verticalSpacing="xs">
                     <MantineTable.Thead className={classes.tableHeader}>
