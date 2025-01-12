@@ -3,12 +3,9 @@
   padding: 0 0.0625rem;
   text-decoration: none;
   cursor: pointer;
-  color: red;
   height: 3.5rem;
   justify-content: center;
   align-items: center;
-  border: 2px solid transparent;
-  /* Typography styles would need to be defined separately */
 }
 
 @media (min-width: 1024px) {
@@ -37,9 +34,7 @@
   height: 3.5rem;
   justify-content: center;
   align-items: center;
-  color: yellow;
-  border-bottom: 2px solid yellow;
-  /* Typography styles would need to be defined separately */
+  color: var(--mantine-color-blue-filled);
 }
 
 @media (min-width: 1024px) {
@@ -79,4 +74,13 @@
     padding: 0 12px;
     width: 100%;
   }
+}
+
+.wrapper {
+
+    background-color: var(--mantine-color-gray-0);
+}
+
+[data-mantine-color-scheme='dark'] .wrapper {
+    background: var(--mantine-color-dark-6);
 }

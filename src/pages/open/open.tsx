@@ -1,11 +1,12 @@
+import { Box } from '@mantine/core';
 import { Table } from '../../components';
 
 const Open = () => {
 
   return (
-    <div>
+    <Box>
       <Table currentStatus='OPEN' />
-    </div>
+    </Box>
   );
 };
 

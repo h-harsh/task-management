@@ -59,7 +59,7 @@ const SearchBar = () => {
                 }))}
                 value={searchColumn}
                 onChange={handleColumnChange}
-                style={{ width: 150 }}
+                style={{ width: 130 }}
             />
             <TextInput
                 ref={searchInputRef}

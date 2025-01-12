@@ -1,11 +1,11 @@
 import { useLocation } from "wouter";
-import { Tabs as MantineTabs, Badge, Button, Group } from '@mantine/core';
+import { Tabs as MantineTabs, Badge, Button, Group, Box, Flex } from '@mantine/core';
 import { useApiStore, useUiStore } from '../../store';
 import { useEffect } from 'react';
 import { fetchTaskCountsHandler } from '../../api/handlers';
 import { ITaskStatus } from '../../types';
 import { IconSortAscending2 } from '@tabler/icons-react';
-
+import classes from './tabs.module.css';
 const ROUTES_DATA = [
     {
         label: "Open",
@@ -46,7 +46,7 @@ const Tabs = () => {
     };
 
     return (
-        <Group justify="space-between" align="center">
+        <Group justify="space-between" align="center" className={classes.wrapper}>
             <MantineTabs
                 value={currentTab}
                 onChange={(value) => setLocation(`/${value}`)}
@@ -72,16 +72,19 @@ const Tabs = () => {
                     ))}
                 </MantineTabs.List>
             </MantineTabs>
-
-            <Button
-                variant="subtle"
-                leftSection={<IconSortAscending2 size={16} />}
-                onClick={clearSort}
-                disabled={!sortConfig.key}
-                size="sm"
-            >
-                Clear Sort
-            </Button>
+            <Flex  >
+                <Button
+                    mr={30}
+                    variant="subtle"
+                    leftSection={<IconSortAscending2 size={16} />}
+                    onClick={clearSort}
+                    disabled={!sortConfig.key}
+                    size="sm"
+                >
+                    Clear
+                </Button>
+            </Flex>
+           
         </Group>
     );
 };

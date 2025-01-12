@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { TABLE_HEADERS } from "../../constants/table";
-import { Table as MantineTable, LoadingOverlay, Loader, ActionIcon, Group, Flex } from "@mantine/core";
+import { Table as MantineTable, LoadingOverlay, Loader, ActionIcon, Group, Flex, Badge, Pill } from "@mantine/core";
 import { ITask, ITaskStatus } from "../../types";
 import { toTitleCase } from "../../utils";
 import ActionModal from "../actionModal/actionModal";
@@ -202,7 +202,11 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
     }, [tasks, sortConfig, searchFilter, currentViewedTask, currentStatus]);
 
 
-    if (loading && tasks.length === 0) { return <Loader size="xl" />; }
+    if (loading && tasks.length === 0) { return (
+        <Flex justify="center" align="center" h="500px">
+            <Loader />
+        </Flex>
+    ); }
     if (error) { return <div>Error: {error}</div>; }
 
     return (
@@ -271,10 +275,21 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                                 }}
                                 tabIndex={0}
                             >
-                                <MantineTable.Td>{toTitleCase(task.priority)}</MantineTable.Td>
+                                <MantineTable.Td>
+                                    <Badge
+                                        color={task.priority === 'HIGH' ? 'red' : task.priority === 'MEDIUM' ? 'yellow' : 'green'}
+                                        size="sm" w={70} 
+                                        variant="light" 
+                                        radius="sm"
+                                    >
+                                        {toTitleCase(task.priority)}
+                                    </Badge>
+                                </MantineTable.Td>
                                 <MantineTable.Td>{task.id}</MantineTable.Td>
                                 <MantineTable.Td>{toTitleCase(task.status)}</MantineTable.Td>
-                                <MantineTable.Td>{task.labels.join(', ')}</MantineTable.Td>
+                                <MantineTable.Td>{task.labels.map(label => {
+                                    return <Pill key={label}>{label}</Pill>;
+                                })}</MantineTable.Td>
                                 <MantineTable.Td>{task.name}</MantineTable.Td>
                                 <MantineTable.Td>{task.due_date.split('T')[0]}</MantineTable.Td>
                                 <MantineTable.Td>{task.created_at.split('T')[0]}</MantineTable.Td>

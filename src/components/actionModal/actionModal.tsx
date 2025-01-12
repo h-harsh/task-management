@@ -1,9 +1,9 @@
-import { Modal, Text, Group, Button, Stack, Select, Textarea, Alert } from '@mantine/core';
+import { Modal, Text, Group, Button, Stack, Select, Textarea, Alert, Pill, Badge } from '@mantine/core';
 import { ITask } from '../../types';
 import { useState, useEffect, useCallback } from 'react';
 import { updateTaskStatusHandler, updateTaskCommentHandler, fetchTaskCountsHandler } from '../../api/handlers';
 import { useUiStore } from '../../store';
-
+import { toTitleCase } from '../../utils/string';
 interface ActionModalProps {
     task: ITask | null;
     onClose: () => void;
@@ -209,7 +209,14 @@ const ActionModal = ({ task, onClose, tasks, onTaskChange }: ActionModalProps) =
 
                     <Group>
                         <Text fw={500}>Priority:</Text>
-                        <Text>{task.priority}</Text>
+                        <Badge
+                            color={task.priority === 'HIGH' ? 'red' : task.priority === 'MEDIUM' ? 'yellow' : 'green'}
+                            size="sm" w={70} 
+                            variant="light" 
+                            radius="sm"
+                        >
+                            {toTitleCase(task.priority)}
+                        </Badge>
                     </Group>
 
                     <Group>
@@ -219,7 +226,9 @@ const ActionModal = ({ task, onClose, tasks, onTaskChange }: ActionModalProps) =
 
                     <Group>
                         <Text fw={500}>Labels:</Text>
-                        <Text>{task.labels.join(', ')}</Text>
+                        <Text>{task.labels.map(label => {
+                            return <Pill key={label}>{label}</Pill>;
+                        })}</Text>
                     </Group>
 
                     <Select

@@ -12,7 +12,7 @@ function NavBar() {
             <div className={classes.inner}>
                 <Group>
                     <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
-                    <Text>Logo</Text>
+                    <Text>Task Management</Text>
                 </Group>
 
                 <Group>
