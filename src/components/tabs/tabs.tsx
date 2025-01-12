@@ -1,9 +1,10 @@
 import { useLocation } from "wouter";
-import { Tabs as MantineTabs, Badge } from '@mantine/core';
-import { useApiStore } from '../../store';
+import { Tabs as MantineTabs, Badge, Button, Group } from '@mantine/core';
+import { useApiStore, useUiStore } from '../../store';
 import { useEffect } from 'react';
 import { fetchTaskCountsHandler } from '../../api/handlers';
 import { ITaskStatus } from '../../types';
+import { IconSortAscending2 } from '@tabler/icons-react';
 
 const ROUTES_DATA = [
     {
@@ -30,6 +31,7 @@ const Tabs = () => {
     const [location, setLocation] = useLocation();
     const currentTab = location.split('/')[1] || 'open';
     const { fetchTaskCountState } = useApiStore();
+    const { sortConfig, clearSort } = useUiStore();
 
     useEffect(() => {
         fetchTaskCountsHandler({ 
@@ -44,31 +46,43 @@ const Tabs = () => {
     };
 
     return (
-        <MantineTabs
-            value={currentTab}
-            onChange={(value) => setLocation(`/${value}`)}
-        >
-            <MantineTabs.List>
-                {ROUTES_DATA.map((route) => (
-                    <MantineTabs.Tab
-                        w={170} 
-                        key={route.key} 
-                        value={route.key}
-                        rightSection={
-                            <Badge 
-                            size="auto"
-                                variant="light"
-                                circle
-                            >
-                                {getTaskCount(route.status)}
-                            </Badge>
-                        }
-                    >
-                        {route.label}
-                    </MantineTabs.Tab>
-                ))}
-            </MantineTabs.List>
-        </MantineTabs>
+        <Group justify="space-between" align="center">
+            <MantineTabs
+                value={currentTab}
+                onChange={(value) => setLocation(`/${value}`)}
+            >
+                <MantineTabs.List>
+                    {ROUTES_DATA.map((route) => (
+                        <MantineTabs.Tab
+                            w={170} 
+                            key={route.key} 
+                            value={route.key}
+                            rightSection={
+                                <Badge 
+                                    size="auto"
+                                    variant="light"
+                                    circle
+                                >
+                                    {getTaskCount(route.status)}
+                                </Badge>
+                            }
+                        >
+                            {route.label}
+                        </MantineTabs.Tab>
+                    ))}
+                </MantineTabs.List>
+            </MantineTabs>
+
+            <Button
+                variant="subtle"
+                leftSection={<IconSortAscending2 size={16} />}
+                onClick={clearSort}
+                disabled={!sortConfig.key}
+                size="sm"
+            >
+                Clear Sort
+            </Button>
+        </Group>
     );
 };
 
