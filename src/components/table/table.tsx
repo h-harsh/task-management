@@ -28,10 +28,9 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
     const isLoadingRef = useRef(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const lastScrollPositionRef = useRef(0);
-    const [sortConfig, setSortConfig] = useState<{
-        key: string | null;
-        direction: 'asc' | 'desc' | null;
-    }>({ key: null, direction: null });
+    
+    // Use sortConfig from store instead of local state
+    const { sortConfig, setSortConfig } = useTaskStore();
     const searchFilter = useTaskStore((state) => state.searchFilter);
     const currentViewedTask = useTaskStore((state) => state.currentViewedTask);
 
@@ -40,7 +39,18 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         root: scrollContainerRef.current,
         rootMargin: '200px 0px',
     });
-    console.log(sortConfig)
+
+    // Move keyMap outside of handleSort
+    const keyMap: { [key: string]: string } = {
+        'Priority': 'priority',
+        'ID': 'id',
+        'Status': 'status',
+        'Labels': 'labels',
+        'Name': 'name',
+        'Due Date': 'due_date',
+        'Created At': 'created_at',
+        'Assignee': 'assignee'
+    };
 
     useEffect(() => {
         const shouldLoadMore = 
@@ -120,13 +130,15 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
     }, [handleKeyDown]);
 
     const handleSort = (key: string, direction: 'asc' | 'desc') => {
-        setSortConfig(current => {
+        const dataKey = keyMap[key];
+        
+        setSortConfig((current) => {
             // If clicking the same direction that's already active, clear the sort
-            if (current.key === key && current.direction === direction) {
+            if (current.key === dataKey && current.direction === direction) {
                 return { key: null, direction: null };
             }
-            // Otherwise, set the new sort configuration
-            return { key, direction };
+            // Set new sort configuration
+            return { key: dataKey, direction };
         });
     };
 
@@ -164,18 +176,37 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         // Apply user-selected sorting if any
         if (sortConfig.key && sortConfig.direction) {
             filtered.sort((a: any, b: any) => {
-                if (sortConfig.key === 'created_at') {
+                const aValue = a[sortConfig.key];
+                const bValue = b[sortConfig.key];
+
+                // Handle dates
+                if (sortConfig.key === 'created_at' || sortConfig.key === 'due_date') {
+                    const aTime = new Date(aValue).getTime();
+                    const bTime = new Date(bValue).getTime();
                     return sortConfig.direction === 'asc'
-                        ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-                        : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                        ? aTime - bTime
+                        : bTime - aTime;
                 }
 
-                if (a[sortConfig.key] < b[sortConfig.key]) {
-                    return sortConfig.direction === 'asc' ? -1 : 1;
+                // Handle arrays (like labels)
+                if (Array.isArray(aValue) && Array.isArray(bValue)) {
+                    const aStr = aValue.join(',');
+                    const bStr = bValue.join(',');
+                    return sortConfig.direction === 'asc'
+                        ? aStr.localeCompare(bStr)
+                        : bStr.localeCompare(aStr);
                 }
-                if (a[sortConfig.key] > b[sortConfig.key]) {
-                    return sortConfig.direction === 'asc' ? 1 : -1;
+
+                // Handle strings and other values
+                if (typeof aValue === 'string' && typeof bValue === 'string') {
+                    return sortConfig.direction === 'asc'
+                        ? aValue.localeCompare(bValue)
+                        : bValue.localeCompare(aValue);
                 }
+
+                // Handle numbers and other types
+                if (aValue < bValue) {return sortConfig.direction === 'asc' ? -1 : 1;}
+                if (aValue > bValue) {return sortConfig.direction === 'asc' ? 1 : -1;}
                 return 0;
             });
         }
@@ -217,7 +248,9 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                                                 mih="auto"
                                             >
                                                 <IconTriangleFilled 
-                                                    color={sortConfig.key === header && sortConfig.direction === 'asc' ? 'primary' : '#ced4da'} 
+                                                    color={sortConfig.key === keyMap[header] && sortConfig.direction === 'asc' 
+                                                        ? 'var(--mantine-color-blue-filled)' 
+                                                        : '#ced4da'} 
                                                     size={8} 
                                                 />
                                             </ActionIcon>
@@ -229,7 +262,9 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                                                 mih="auto"
                                             >
                                                 <IconTriangleInvertedFilled
-                                                    color={sortConfig.key === header && sortConfig.direction === 'desc' ? 'primary' : '#ced4da'} 
+                                                    color={sortConfig.key === keyMap[header] && sortConfig.direction === 'desc' 
+                                                        ? 'var(--mantine-color-blue-filled)' 
+                                                        : '#ced4da'} 
                                                     size={8} 
                                                 />
                                             </ActionIcon>
