@@ -1,7 +1,7 @@
-import { Modal, Text, Group, Button, Stack, Select, Textarea } from '@mantine/core';
+import { Modal, Text, Group, Button, Stack, Select, Textarea, Alert } from '@mantine/core';
 import { ITask } from '../../types';
-import { useState } from 'react';
-import { updateTaskStatusHandler } from '../../api/handlers';
+import { useState, useEffect } from 'react';
+import { updateTaskStatusHandler, updateTaskCommentHandler } from '../../api/handlers';
 
 interface ActionModalProps {
     task: ITask | null;
@@ -9,23 +9,56 @@ interface ActionModalProps {
     currentStatus: string;
 }
 
-const ActionModal = ({ task, onClose, currentStatus }: ActionModalProps) => {
-    const [status, setStatus] = useState(task?.status || 'OPEN');
+const ActionModal = ({ task, onClose }: ActionModalProps) => {
+    const [status, setStatus] = useState<string>(task?.status || 'OPEN');
     const [comment, setComment] = useState('');
+    const [isStatusChanged, setIsStatusChanged] = useState(false);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (task) {
+            setStatus(task.status);
+            setComment('');
+            setIsStatusChanged(false);
+            setError('');
+        }
+    }, [task]);
+
+    const handleStatusChange = (value: string | null) => {
+        if (!value) {return;}
+        setStatus(value);
+        setIsStatusChanged(value !== task?.status);
+    };
 
     const handleSubmit = () => {
         if (!task) {return;}
-        
 
-        
-        updateTaskStatusHandler({
-            id: task.id,
-            newStatus: status,
-            comment
-        });
-    }
+        if (isStatusChanged && !comment.trim()) {
+            setError('Comment is required when changing status');
+            return;
+        }
 
-  
+        try {
+            if (isStatusChanged) {
+                updateTaskStatusHandler({
+                    id: task.id,
+                    newStatus: status,
+                    comment: comment.trim()
+                });
+            } else if (comment.trim()) {
+                updateTaskCommentHandler({
+                    id: task.id,
+                    comment: comment.trim()
+                });
+            }
+            onClose();
+        } catch (error) {
+            setError(error instanceof Error ? error.message : 'An error occurred');
+        }
+    };
+
+    const isSubmitDisabled = isStatusChanged && !comment.trim();
+    const buttonText = isStatusChanged ? 'Update Status' : (comment.trim() ? 'Update Comment' : 'Close');
 
     return (
         <Modal 
@@ -59,7 +92,7 @@ const ActionModal = ({ task, onClose, currentStatus }: ActionModalProps) => {
                     <Select
                         label="Status"
                         value={status}
-                        onChange={(value) => setStatus(value || 'OPEN')}
+                        onChange={handleStatusChange}
                         data={[
                             { value: 'OPEN', label: 'Open' },
                             { value: 'IN_PROGRESS', label: 'In Progress' },
@@ -67,23 +100,37 @@ const ActionModal = ({ task, onClose, currentStatus }: ActionModalProps) => {
                         ]}
                     />
 
+                    {task.comment && (
+                        <Group>
+                            <Text fw={500}>Previous Comment:</Text>
+                            <Text>{task.comment}</Text>
+                        </Group>
+                    )}
+
                     <Textarea
-                        label="Comment"
+                        label={`Comment ${isStatusChanged ? '(Required)' : '(Optional)'}`}
                         value={comment}
                         onChange={(event) => setComment(event.currentTarget.value)}
                         placeholder="Add a comment..."
-                        required
                         minRows={3}
+                        error={error}
                     />
+
+                    {isStatusChanged && (
+                        <Alert color="blue">
+                            Status change requires a comment
+                        </Alert>
+                    )}
 
                     <Group justify="flex-end" mt="md">
                         <Button variant="outline" onClick={onClose}>
                             Cancel
                         </Button>
                         <Button 
-                            onClick={handleSubmit} 
+                            onClick={handleSubmit}
+                            disabled={isSubmitDisabled}
                         >
-                            Update Status
+                            {buttonText}
                         </Button>
                     </Group>
                 </Stack>
