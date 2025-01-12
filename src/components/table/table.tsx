@@ -7,6 +7,7 @@ import ActionModal from "../actionModal/actionModal";
 import { useTasksFetch } from "../../hooks";
 import { useIntersection } from '@mantine/hooks';
 import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
+import { useTaskStore } from '../../store/taskStore';
 
 const BUFFER_THRESHOLD = 0.5;
 
@@ -31,6 +32,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         key: string | null;
         direction: 'asc' | 'desc' | null;
     }>({ key: null, direction: null });
+    const searchFilter = useTaskStore((state) => state.searchFilter);
 
     const { ref: bottomRef, entry: bottomEntry } = useIntersection({
         threshold: BUFFER_THRESHOLD,
@@ -129,21 +131,49 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         });
     };
 
-    const sortedTasks = useMemo(() => {
-        if (!sortConfig.key || !sortConfig.direction) {
-            return tasks;
+    const filteredAndSortedTasks = useMemo(() => {
+        let filtered = [...tasks];
+        if (searchFilter?.value) {
+            filtered = filtered.filter(task => {
+                const value = task[searchFilter.column as keyof ITask];
+                
+                if (!value) {return false;}
+                
+                const stringValue = value.toString().toLowerCase();
+                const searchValue = searchFilter.value.toLowerCase();
+                
+                if (Array.isArray(value)) {
+                    return value.some(v => 
+                        v?.toString().toLowerCase().includes(searchValue)
+                    );
+                }
+                
+                return stringValue.includes(searchValue);
+            });
+            
         }
 
-        return [...tasks].sort((a: any, b: any) => {
-            if (a[sortConfig.key] < b[sortConfig.key]) {
-                return sortConfig.direction === 'asc' ? -1 : 1;
-            }
-            if (a[sortConfig.key] > b[sortConfig.key]) {
-                return sortConfig.direction === 'asc' ? 1 : -1;
-            }
-            return 0;
-        });
-    }, [tasks, sortConfig]);
+        // Apply sorting
+        if (sortConfig.key && sortConfig.direction) {
+            filtered.sort((a: any, b: any) => {
+                if (a[sortConfig.key] < b[sortConfig.key]) {
+                    return sortConfig.direction === 'asc' ? -1 : 1;
+                }
+                if (a[sortConfig.key] > b[sortConfig.key]) {
+                    return sortConfig.direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+
+        return filtered;
+    }, [tasks, sortConfig, searchFilter]);
+
+    console.log('Rendering table with:', {
+        totalTasks: tasks.length,
+        filteredTasks: filteredAndSortedTasks.length,
+        searchFilter
+    });
 
     if (loading && tasks.length === 0) { return <Loader size="xl" />; }
     if (error) { return <div>Error: {error}</div>; }
@@ -199,7 +229,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                         </MantineTable.Tr>
                     </MantineTable.Thead>
                     <MantineTable.Tbody>
-                        {sortedTasks.map((task, index) => (
+                        {filteredAndSortedTasks.map((task, index) => (
                             <MantineTable.Tr 
                                 key={`${task.id}-${index}`}
                                 onClick={() => handleRowClick(task)}
