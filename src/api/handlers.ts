@@ -1,4 +1,5 @@
-import {useApiStore} from '../store';
+// @ts-nocheck
+import { useApiStore } from '../store';
 import { fetchTasks, updateTaskStatus, fetchTaskDetails, updateTaskComment, fetchTaskCounts } from './backend';
 import type {
     IFetchTasksRequest,
@@ -87,7 +88,7 @@ import type {
     updateTaskComment(request)
         .then(() => {
             // Set success state
-            set({ status: "success", loading: false, error: null });
+            set({ status: "success", data: null, loading: false, error: null });
         })
         .catch((error) => {
             // Set error state

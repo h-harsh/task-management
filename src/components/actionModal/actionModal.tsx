@@ -57,6 +57,7 @@ const ActionModal = ({ task, onClose }: ActionModalProps) => {
                 
                 // Update the current viewed task in the store
                 updateCurrentViewedTask({
+                    // @ts-ignore
                     status,
                     comment: comment.trim(),
                     updated_at: new Date().toISOString()

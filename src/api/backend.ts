@@ -65,7 +65,7 @@ function fetchTaskDetails({ id }: IFetchTaskDetailsRequest): Promise<IFetchTaskD
     return new Promise((resolve, reject) => {
         const task = tasks.find(task => task.id === id);
         if (task) {
-            resolve(task);
+            resolve({task, success: true});
         } else {
             reject(new Error("Task not found."));
         }

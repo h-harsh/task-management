@@ -3,15 +3,9 @@ import { useDisclosure } from '@mantine/hooks';
 import classes from './navbar.module.css';
 import ThemeToggle from '../themeToggle/themeToggle';
 import SearchBar from '../searchBar/searchBar';
-import { useUiStore } from '../../store';
 
 function NavBar() {
     const [opened, { toggle }] = useDisclosure(false);
-    const setSearchFilter = useUiStore((state) => state.setSearchFilter);
-
-    const handleSearch = (column: string, value: string) => {
-        setSearchFilter({ column, value });
-    };
 
     return (
         <header className={classes.header}>
@@ -22,7 +16,7 @@ function NavBar() {
                 </Group>
 
                 <Group>
-                    <SearchBar onSearch={handleSearch} />
+                    <SearchBar />
                     <ThemeToggle />
                 </Group>
             </div>
