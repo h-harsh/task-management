@@ -91,15 +91,45 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         switch (event.key) {
             case 'ArrowDown':
                 event.preventDefault();
-                setFocusedIndex(prev => 
-                    prev < tasks.length - 1 ? prev + 1 : prev
-                );
+                setFocusedIndex(prev => {
+                    const newIndex = prev < tasks.length - 1 ? prev + 1 : prev;
+                    
+                    // Get the table row element
+                    const row = tableRef.current?.querySelector(`tr:nth-child(${newIndex + 1})`);
+                    if (row) {
+                        // Calculate if the row is near the bottom of the viewport
+                        const rect = row.getBoundingClientRect();
+                        const parentRect = tableRef.current?.getBoundingClientRect();
+                        
+                        if (parentRect && rect.bottom > parentRect.bottom - 100) {
+                            // Scroll the row into view with some padding
+                            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                    
+                    return newIndex;
+                });
                 break;
             case 'ArrowUp':
                 event.preventDefault();
-                setFocusedIndex(prev => 
-                    prev > 0 ? prev - 1 : prev
-                );
+                setFocusedIndex(prev => {
+                    const newIndex = prev > 0 ? prev - 1 : prev;
+                    
+                    // Get the table row element
+                    const row = tableRef.current?.querySelector(`tr:nth-child(${newIndex + 1})`);
+                    if (row) {
+                        // Calculate if the row is near the top of the viewport
+                        const rect = row.getBoundingClientRect();
+                        const parentRect = tableRef.current?.getBoundingClientRect();
+                        
+                        if (parentRect && rect.top < parentRect.top + 100) {
+                            // Scroll the row into view with some padding
+                            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                    
+                    return newIndex;
+                });
                 break;
             case 'Enter':
                 event.preventDefault();
@@ -116,27 +146,22 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         const dataKey = keyMap[key];
         
         setSortConfig((current) => {
-            // If clicking the same direction that's already active, clear the sort
             if (current.key === dataKey && current.direction === direction) {
                 return { key: null, direction: null };
             }
-            // Set new sort configuration
             return { key: dataKey, direction };
         });
     };
 
     const filteredAndSortedTasks = useMemo(() => {
-        // First sort by created_at as base ordering
         let filtered = [...tasks].sort((a, b) => 
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         );
         
-        // Remove the currently viewed task if its status doesn't match current tab
         if (currentViewedTask && currentViewedTask.status !== currentStatus) {
             filtered = filtered.filter(task => task.id !== currentViewedTask.id);
         }
         
-        // Apply search filter
         if (searchFilter?.value) {
             filtered = filtered.filter(task => {
                 const value = task[searchFilter.column as keyof ITask];
@@ -156,7 +181,6 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
             });
         }
 
-        // Apply user-selected sorting if any
         if (sortConfig.key && sortConfig.direction) {
             filtered.sort((a: ITask, b: ITask) => {
                 const aValue = a[sortConfig.key as keyof ITask];

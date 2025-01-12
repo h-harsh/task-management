@@ -1,7 +1,7 @@
 .tableWrapper{
     position: relative;
     min-height: 400px;
-    max-height: 80vh;
+    max-height: calc(100vh - 200px);
     overflow-y: auto;
     scroll-behavior: smooth;
 }
