@@ -13,16 +13,18 @@ import type {
 } from '../types';
 
 import mockData from './data.json';
+import { PAGE_SIZE } from '../constants/table';
 
 const tasks: ITask[] = mockData.tasks as ITask[];
 
 // Fetch Task Data for Table
-function fetchTasks({ status = "OPEN", page = { size: 100, offset: 0 } }: { status: string, page: ITaskPage }): Promise<IFetchTasksResponse> {
-    return new Promise((resolve) => {
+function fetchTasks({ status = "OPEN", page = { size: PAGE_SIZE, offset: 0 } }: { status: string, page: ITaskPage }): Promise<IFetchTasksResponse> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
         const filteredTasks = tasks.filter(task => task.status === status);
         const paginatedTasks = filteredTasks.slice(
             page.offset,
-            page.offset + page.size
+            page.offset + page.size + 10
         );
         resolve({
             tasks: paginatedTasks,
@@ -33,7 +35,8 @@ function fetchTasks({ status = "OPEN", page = { size: 100, offset: 0 } }: { stat
                 offset: page.offset,
             },
         });
-    });
+    }, 50);
+  });
 }
 
 // Update Task Status with Comment

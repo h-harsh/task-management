@@ -1,13 +1,2 @@
-const TABLE_HEADERS = [
-    "priority",
-    "id",
-    "status",
-    "labels",
-    "name",
-    "due_date",
-    "created_at",
-    "assignee",
-    // "comment"
-]
-
-export { TABLE_HEADERS };
+export const TABLE_HEADERS = ['priority', 'id', 'status', 'labels', 'name', 'due_date', 'created_at', 'assignee'];
+export const PAGE_SIZE = 50;
