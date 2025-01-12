@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { TABLE_HEADERS } from "../../constants/table";
-import { Table as MantineTable, LoadingOverlay, Skeleton, Loader, ActionIcon, Group, Flex } from "@mantine/core";
+import { Table as MantineTable, LoadingOverlay, Loader, ActionIcon, Group, Flex } from "@mantine/core";
 import { ITask, ITaskStatus } from "../../types";
 import { toTitleCase } from "../../utils";
 import ActionModal from "../actionModal/actionModal";
@@ -8,18 +8,10 @@ import { useTasksFetch } from "../../hooks";
 import { useIntersection } from '@mantine/hooks';
 import { IconTriangleFilled, IconTriangleInvertedFilled } from '@tabler/icons-react';
 import { useUiStore } from '../../store';
+import RowSkeleton from "./rowSkeleton";
+import classes from './tables.module.css';
 
 const BUFFER_THRESHOLD = 0.5;
-
-const LoadingRow = () => (
-    <MantineTable.Tr>
-        {TABLE_HEADERS.map((_, index) => (
-            <MantineTable.Td key={index}>
-                <Skeleton height={20} radius="sm" />
-            </MantineTable.Td>
-        ))}
-    </MantineTable.Tr>
-);
 
 const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
     const { tasks, loading, error, hasMore, loadMore } = useTasksFetch(currentStatus);
@@ -29,7 +21,6 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const lastScrollPositionRef = useRef(0);
     
-    // Use sortConfig from store instead of local state
     const { sortConfig, setSortConfig } = useUiStore();
     const searchFilter = useUiStore((state) => state.searchFilter);
     const currentViewedTask = useUiStore((state) => state.currentViewedTask);
@@ -40,7 +31,6 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         rootMargin: '200px 0px',
     });
 
-    // Move keyMap outside of handleSort
     const keyMap: { [key: string]: string } = {
         'Priority': 'priority',
         'ID': 'id',
@@ -73,7 +63,6 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         }
     }, [bottomEntry?.isIntersecting, hasMore, loading, loadMore]);
 
-    // Keep the scroll position effect
     useEffect(() => {
         if (!loading && scrollContainerRef.current && lastScrollPositionRef.current) {
             scrollContainerRef.current.scrollTop = lastScrollPositionRef.current;
@@ -121,7 +110,6 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         }
     }, [tasks, focusedIndex, handleRowClick]);
 
-    // Set up keyboard event listeners
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
         return () => {
@@ -228,16 +216,10 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
             
             <div 
                 ref={scrollContainerRef}
-                style={{ 
-                    position: 'relative', 
-                    minHeight: '400px', 
-                    maxHeight: '80vh', 
-                    overflowY: 'auto',
-                    scrollBehavior: 'smooth'
-                }}
+                className={classes.tableWrapper}
             >
                 <MantineTable highlightOnHover withTableBorder withColumnBorders verticalSpacing="xs">
-                    <MantineTable.Thead style={{ position: 'sticky', top: 0, background: 'white', zIndex: 1 }}>
+                    <MantineTable.Thead className={classes.tableHeader}>
                         <MantineTable.Tr>
                             {TABLE_HEADERS.map((header) => (
                                 <MantineTable.Th key={header}>
@@ -318,7 +300,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                             <MantineTable withTableBorder withColumnBorders>
                                 <MantineTable.Tbody>
                                     {Array(5).fill(0).map((_, index) => (
-                                        <LoadingRow key={index} />
+                                        <RowSkeleton key={index} />
                                     ))}
                                 </MantineTable.Tbody>
                             </MantineTable>

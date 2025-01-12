@@ -9,7 +9,7 @@ const SearchBar = () => {
     const [searchColumn, setSearchColumn] = useState<string | null>(searchFilter.column);
     const [searchValue, setSearchValue] = useState(searchFilter.value);
 
-    // Keep local state in sync with store
+    // To keep local state in sync with store
     useEffect(() => {
         setSearchColumn(searchFilter.column);
         setSearchValue(searchFilter.value);

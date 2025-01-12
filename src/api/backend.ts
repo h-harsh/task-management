@@ -92,7 +92,7 @@ function updateTaskComment({ id, comment }: IUpdateTaskCommentRequest): Promise<
     });
 }
 
-// Add this function
+// Fetch task counts for each tab
 function fetchTaskCounts({ statuses }: IFetchTaskCountRequest): Promise<IFetchTaskCountResponse> {
     return new Promise((resolve) => {
         const counts = statuses.map(status => ({

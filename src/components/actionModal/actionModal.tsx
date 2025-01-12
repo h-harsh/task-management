@@ -36,7 +36,6 @@ const ActionModal = ({ task, onClose }: ActionModalProps) => {
     const handleSubmit = () => {
         if (!task) {return;}
 
-        // If there are no changes, treat it as cancel
         if (!isStatusChanged && !comment.trim()) {
             onClose();
             return;
@@ -80,7 +79,6 @@ const ActionModal = ({ task, onClose }: ActionModalProps) => {
                 });
             }
             
-            // Don't close the modal
             setComment('');
             setIsStatusChanged(false);
             setError('');

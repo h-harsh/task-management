@@ -1,0 +1,13 @@
+.tableWrapper{
+    position: relative;
+    min-height: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+.tableHeader{
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+}
