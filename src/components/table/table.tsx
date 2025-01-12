@@ -40,6 +40,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         root: scrollContainerRef.current,
         rootMargin: '200px 0px',
     });
+    console.log(sortConfig)
 
     useEffect(() => {
         const shouldLoadMore = 
@@ -118,17 +119,14 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         };
     }, [handleKeyDown]);
 
-    const handleSort = (key: string) => {
+    const handleSort = (key: string, direction: 'asc' | 'desc') => {
         setSortConfig(current => {
-            if (current.key === key) {
-                if (current.direction === 'asc') {
-                    return { key, direction: 'desc' };
-                }
-                if (current.direction === 'desc') {
-                    return { key: null, direction: null };
-                }
+            // If clicking the same direction that's already active, clear the sort
+            if (current.key === key && current.direction === direction) {
+                return { key: null, direction: null };
             }
-            return { key, direction: 'asc' };
+            // Otherwise, set the new sort configuration
+            return { key, direction };
         });
     };
 
@@ -214,7 +212,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                                             <ActionIcon 
                                                 size="xs" 
                                                 variant="transparent"
-                                                onClick={() => handleSort(header)}
+                                                onClick={() => handleSort(header, 'asc')}
                                                 h="auto"
                                                 mih="auto"
                                             >
@@ -226,7 +224,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                                             <ActionIcon 
                                                 size="xs" 
                                                 variant="transparent"
-                                                onClick={() => handleSort(header)}
+                                                onClick={() => handleSort(header, 'desc')}
                                                 h="auto"
                                                 mih="auto"
                                             >
