@@ -12,7 +12,7 @@ import type {
     IFetchTaskCountResponse
 } from '../types';
 
-import mockData from './smallData.json';
+import mockData from './data.json';
 
 const tasks: ITask[] = mockData.tasks as ITask[];
 

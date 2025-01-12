@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { TABLE_HEADERS } from "../../constants/table";
 import { Table as MantineTable } from "@mantine/core";
-import { ITask } from "../../types";
+import { ITask, ITaskStatus } from "../../types";
 import { toTitleCase } from "../../utils";
 import ActionModal from "../actionModal/actionModal";
+import { useTasksFetch } from "../../hooks";
 
-const Table = ({ tasks, currentStatus }: { tasks: ITask[], currentStatus: string }) => {
+const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
+    const { tasks, loading, error } = useTasksFetch(currentStatus);
+
     const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
     const [focusedIndex, setFocusedIndex] = useState<number>(-1);
 
@@ -56,6 +59,9 @@ const Table = ({ tasks, currentStatus }: { tasks: ITask[], currentStatus: string
     useEffect(() => {
         setFocusedIndex(tasks.length > 0 ? 0 : -1);
     }, [tasks]);
+
+    if (loading) { return <div>Loading...</div>; }
+    if (error) { return <div>Error: {error}</div>; }
 
     return (
         <div>

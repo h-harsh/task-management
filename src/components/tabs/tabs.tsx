@@ -56,7 +56,7 @@ const Tabs = () => {
                         value={route.key}
                         rightSection={
                             <Badge 
-                            size="lg"
+                            size="auto"
                                 variant="light"
                                 circle
                             >
