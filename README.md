@@ -3,7 +3,7 @@
 A web-based task management tool
 
 ## 🌐 Live Demo
-[[Add your deployed URL here](https://task-management-tm.netlify.app/open)]
+[[Link](https://task-management-tm.netlify.app/open)]
 
 ## ✨ Features
 
@@ -35,7 +35,7 @@ A web-based task management tool
   - 3: Set status to Closed
 
 
-### 🛠️ Technical Stack
+## 🛠️ Technical Details
 
 - React.js
 - TypeScript
