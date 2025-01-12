@@ -1,11 +1,11 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
-import { useTaskStore } from '../store';
+import { useApiStore } from '../store';
 import { fetchTasksHandler } from '../api/handlers';
 import { ITaskStatus, ITask } from '../types';
 import { PAGE_SIZE } from '../constants/table';
 
 const useTasksFetch = (status: ITaskStatus) => {
-  const { fetchTasksState } = useTaskStore();
+  const { fetchTasksState } = useApiStore();
   const [allTasks, setAllTasks] = useState<ITask[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);

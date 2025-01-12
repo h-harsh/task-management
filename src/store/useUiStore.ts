@@ -12,25 +12,12 @@ interface SortConfig {
 }
 
 interface TaskStore {
-    fetchTasksState: {
-        data: {
-            tasks: ITask[];
-            pagination: {
-                total: number;
-                has_next: boolean;
-                page_size: number;
-                offset: number;
-            };
-        } | null;
-        loading: boolean;
-        error: string | null;
-    };
     searchFilter: SearchFilter;
     sortConfig: SortConfig;
     currentViewedTask: ITask | null;
     setSearchFilter: (filter: SearchFilter) => void;
     setSortConfig: (config: SortConfig | ((prev: SortConfig) => SortConfig)) => void;
-    setFetchTasksState: (state: TaskStore['fetchTasksState']) => void;
+    // setFetchTasksState: (state: TaskStore['fetchTasksState']) => void;
     setCurrentViewedTask: (task: ITask | null) => void;
     updateCurrentViewedTask: (updates: Partial<ITask>) => void;
     clearSearch: () => void;
@@ -80,7 +67,7 @@ const getInitialSortState = (): SortConfig => {
     }
 };
 
-const useTaskStore = create<TaskStore>((set) => ({
+const useUiStore = create<TaskStore>((set) => ({
     fetchTasksState: {
         data: null,
         loading: false,
@@ -122,10 +109,6 @@ const useTaskStore = create<TaskStore>((set) => ({
             sortConfig: { key: null, direction: null }
         }));
     },
-    setFetchTasksState: (state: TaskStore['fetchTasksState']) => set((prev) => ({ 
-        ...prev,
-        fetchTasksState: state 
-    })),
     setCurrentViewedTask: (task) => set((state) => ({
         ...state,
         currentViewedTask: task
@@ -138,4 +121,4 @@ const useTaskStore = create<TaskStore>((set) => ({
     }))
 }));
 
-export { useTaskStore }; 
+export default useUiStore;

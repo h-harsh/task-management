@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { Group, TextInput, Select, ActionIcon } from '@mantine/core';
 import { IconSearch, IconX } from '@tabler/icons-react';
 import { TABLE_HEADERS } from '../../constants/table';
-import { useTaskStore } from '../../store/taskStore';
+import { useUiStore } from '../../store';
 
 const SearchBar = () => {
-    const { searchFilter, setSearchFilter, clearSearch } = useTaskStore();
+    const { searchFilter, setSearchFilter, clearSearch } = useUiStore();
     const [searchColumn, setSearchColumn] = useState<string | null>(searchFilter.column);
     const [searchValue, setSearchValue] = useState(searchFilter.value);
 

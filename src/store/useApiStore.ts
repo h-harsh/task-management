@@ -22,7 +22,7 @@ interface TaskStore {
     setFetchTaskCountState: (newState: APIState<IFetchTaskCountResponse>) => void;
 }
 
-const useTaskStore = create<TaskStore>((set) => ({
+const useApiStore = create<TaskStore>((set) => ({
     // Initial states
     fetchTasksState: { status: "idle", data: null, loading: false, error: null },
     updateTaskStatusState: { status: "idle", data: null, loading: false, error: null },
@@ -38,4 +38,4 @@ const useTaskStore = create<TaskStore>((set) => ({
     setFetchTaskCountState: (newState) => set(() => ({ fetchTaskCountState: newState })),
 }));
 
-export default useTaskStore;
+export default useApiStore;

@@ -3,11 +3,11 @@ import { useDisclosure } from '@mantine/hooks';
 import classes from './navbar.module.css';
 import ThemeToggle from '../themeToggle/themeToggle';
 import SearchBar from '../searchBar/searchBar';
-import { useTaskStore } from '../../store/taskStore';
+import { useUiStore } from '../../store';
 
 function NavBar() {
     const [opened, { toggle }] = useDisclosure(false);
-    const setSearchFilter = useTaskStore((state) => state.setSearchFilter);
+    const setSearchFilter = useUiStore((state) => state.setSearchFilter);
 
     const handleSearch = (column: string, value: string) => {
         setSearchFilter({ column, value });

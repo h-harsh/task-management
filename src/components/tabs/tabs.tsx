@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
 import { Tabs as MantineTabs, Badge } from '@mantine/core';
-import { useTaskStore } from '../../store';
+import { useApiStore } from '../../store';
 import { useEffect } from 'react';
 import { fetchTaskCountsHandler } from '../../api/handlers';
 import { ITaskStatus } from '../../types';
@@ -29,7 +29,7 @@ const ROUTES_DATA = [
 const Tabs = () => {
     const [location, setLocation] = useLocation();
     const currentTab = location.split('/')[1] || 'open';
-    const { fetchTaskCountState } = useTaskStore();
+    const { fetchTaskCountState } = useApiStore();
 
     useEffect(() => {
         fetchTaskCountsHandler({ 
@@ -51,7 +51,7 @@ const Tabs = () => {
             <MantineTabs.List>
                 {ROUTES_DATA.map((route) => (
                     <MantineTabs.Tab
-                    w={170} 
+                        w={170} 
                         key={route.key} 
                         value={route.key}
                         rightSection={

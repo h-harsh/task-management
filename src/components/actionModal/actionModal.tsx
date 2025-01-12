@@ -2,7 +2,7 @@ import { Modal, Text, Group, Button, Stack, Select, Textarea, Alert } from '@man
 import { ITask } from '../../types';
 import { useState, useEffect } from 'react';
 import { updateTaskStatusHandler, updateTaskCommentHandler, fetchTaskCountsHandler } from '../../api/handlers';
-import { useTaskStore } from '../../store/taskStore';
+import { useUiStore } from '../../store';
 
 interface ActionModalProps {
     task: ITask | null;
@@ -10,12 +10,12 @@ interface ActionModalProps {
     currentStatus: string;
 }
 
-const ActionModal = ({ task, onClose, currentStatus }: ActionModalProps) => {
+const ActionModal = ({ task, onClose }: ActionModalProps) => {
     const [status, setStatus] = useState<string>(task?.status || 'OPEN');
     const [comment, setComment] = useState('');
     const [isStatusChanged, setIsStatusChanged] = useState(false);
     const [error, setError] = useState('');
-    const { updateCurrentViewedTask, setCurrentViewedTask } = useTaskStore();
+    const { updateCurrentViewedTask, setCurrentViewedTask } = useUiStore();
 
     useEffect(() => {
         if (task) {

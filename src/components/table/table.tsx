@@ -7,7 +7,7 @@ import ActionModal from "../actionModal/actionModal";
 import { useTasksFetch } from "../../hooks";
 import { useIntersection } from '@mantine/hooks';
 import { IconTriangleFilled, IconTriangleInvertedFilled } from '@tabler/icons-react';
-import { useTaskStore } from '../../store/taskStore';
+import { useUiStore } from '../../store';
 
 const BUFFER_THRESHOLD = 0.5;
 
@@ -30,9 +30,9 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
     const lastScrollPositionRef = useRef(0);
     
     // Use sortConfig from store instead of local state
-    const { sortConfig, setSortConfig } = useTaskStore();
-    const searchFilter = useTaskStore((state) => state.searchFilter);
-    const currentViewedTask = useTaskStore((state) => state.currentViewedTask);
+    const { sortConfig, setSortConfig } = useUiStore();
+    const searchFilter = useUiStore((state) => state.searchFilter);
+    const currentViewedTask = useUiStore((state) => state.currentViewedTask);
 
     const { ref: bottomRef, entry: bottomEntry } = useIntersection({
         threshold: BUFFER_THRESHOLD,

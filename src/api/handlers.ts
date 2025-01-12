@@ -1,4 +1,4 @@
-import {useTaskStore} from '../store';
+import {useApiStore} from '../store';
 import { fetchTasks, updateTaskStatus, fetchTaskDetails, updateTaskComment, fetchTaskCounts } from './backend';
 import type {
     IFetchTasksRequest,
@@ -9,7 +9,7 @@ import type {
 } from '../types/api';
 
  const fetchTasksHandler = (request: IFetchTasksRequest): void => {
-    const set = useTaskStore.getState().setFetchTasksState;
+    const set = useApiStore.getState().setFetchTasksState;
 
     // Set loading state
     set({ status: 'loading', data: null, loading: true, error: null });
@@ -33,7 +33,7 @@ import type {
 
 // Handler: Update Task Status
  const updateTaskStatusHandler = (request: IUpdateTaskStatusRequest): void => {
-    const set = useTaskStore.getState().setUpdateTaskStatusState;
+    const set = useApiStore.getState().setUpdateTaskStatusState;
 
     // Set loading state
     set({ status: "loading", data: null, loading: true, error: null });
@@ -56,7 +56,7 @@ import type {
 
 // Handler: Fetch Task Details
  const fetchTaskDetailsHandler = (request: IFetchTaskDetailsRequest): void => {
-    const set = useTaskStore.getState().setFetchTaskDetailsState;
+    const set = useApiStore.getState().setFetchTaskDetailsState;
 
     // Set loading state
     set({ status: "loading", data: null, loading: true, error: null });
@@ -79,7 +79,7 @@ import type {
 
 // Handler: Update Task Comment
  const updateTaskCommentHandler = (request: IUpdateTaskCommentRequest): void => {
-    const set = useTaskStore.getState().setUpdateTaskCommentState;
+    const set = useApiStore.getState().setUpdateTaskCommentState;
 
     // Set loading state
     set({ status: "loading", data: null, loading: true, error: null });
@@ -101,7 +101,7 @@ import type {
 };
 
 const fetchTaskCountsHandler = (request: IFetchTaskCountRequest): void => {
-    const set = useTaskStore.getState().setFetchTaskCountState;
+    const set = useApiStore.getState().setFetchTaskCountState;
 
     // Set loading state
     set({ status: 'loading', data: null, loading: true, error: null });
