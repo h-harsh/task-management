@@ -29,27 +29,40 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
 
     const { ref: bottomRef, entry: bottomEntry } = useIntersection({
         threshold: BUFFER_THRESHOLD,
-        root: null,
-        rootMargin: '500px 0px',
+        root: scrollContainerRef.current,
+        rootMargin: '200px 0px',
     });
 
-    // Load more when reaching buffer zone
     useEffect(() => {
-        if (bottomEntry?.isIntersecting && 
+        const shouldLoadMore = 
+            bottomEntry?.isIntersecting && 
             hasMore && 
             !loading && 
-            !isLoadingRef.current && 
-            tasks.length > 0) {
+            !isLoadingRef.current;
+
+        if (shouldLoadMore) {
             isLoadingRef.current = true;
             lastScrollPositionRef.current = scrollContainerRef.current?.scrollTop || 0;
-            loadMore();
+            
+            Promise.resolve(loadMore())
+                .then(() => {
+                    isLoadingRef.current = false;
+                })
+                .catch(() => {
+                    isLoadingRef.current = false;
+                });
         }
-    }, [bottomEntry?.isIntersecting, hasMore, loading, loadMore, tasks.length]);
+    }, [bottomEntry?.isIntersecting, hasMore, loading, loadMore]);
 
-    // Maintain scroll position after loading
+    // Keep the scroll position effect
     useEffect(() => {
         if (!loading && scrollContainerRef.current && lastScrollPositionRef.current) {
             scrollContainerRef.current.scrollTop = lastScrollPositionRef.current;
+        }
+    }, [loading]);
+
+    useEffect(() => {
+        if (!loading) {
             isLoadingRef.current = false;
         }
     }, [loading, tasks]);
@@ -127,6 +140,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                             <MantineTable.Tr 
                                 key={`${task.id}-${index}`}
                                 onClick={() => handleRowClick(task)}
+                                className="task-row"
                                 style={{ 
                                     cursor: 'pointer',
                                     backgroundColor: index === focusedIndex ? 'var(--mantine-color-blue-1)' : undefined

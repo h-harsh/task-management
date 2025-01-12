@@ -454,7 +454,7 @@
 
 "@mantine/core@^7.15.3":
   version "7.15.3"
-  resolved "https://registry.npmjs.org/@mantine/core/-/core-7.15.3.tgz"
+  resolved "https://registry.yarnpkg.com/@mantine/core/-/core-7.15.3.tgz#91fded05219112483d821cec46fcbb8a80964b79"
   integrity sha512-8IMTq5xDJDjByDUYkDNKImikASStzrnPtVumKsrEnyEY0zhAWkAe/z/+PjTUMcN44ncJ/PrXQkJ6qMaVWzSZwA==
   dependencies:
     "@floating-ui/react" "^0.26.28"
@@ -466,7 +466,7 @@
 
 "@mantine/hooks@^7.15.3":
   version "7.15.3"
-  resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-7.15.3.tgz"
+  resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-7.15.3.tgz#c8f65dcb9391b306c05f2b501980b21944c3263a"
   integrity sha512-rZYObhrmww3OIb4O30pDox/rc+9k3AExO0FSw13t7cfz5/Di+Ho1cChswVFAshnp81ucGEod1fiDOfuyGW7JhA==
 
 "@nodelib/fs.scandir@2.1.5":
