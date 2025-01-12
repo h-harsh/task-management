@@ -1,16 +1,17 @@
 import { Modal, Text, Group, Button, Stack, Select, Textarea, Alert } from '@mantine/core';
 import { ITask } from '../../types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { updateTaskStatusHandler, updateTaskCommentHandler, fetchTaskCountsHandler } from '../../api/handlers';
 import { useUiStore } from '../../store';
 
 interface ActionModalProps {
     task: ITask | null;
     onClose: () => void;
-    currentStatus: string;
+    tasks: ITask[];
+    onTaskChange: (task: ITask) => void;
 }
 
-const ActionModal = ({ task, onClose }: ActionModalProps) => {
+const ActionModal = ({ task, onClose, tasks, onTaskChange }: ActionModalProps) => {
     const [status, setStatus] = useState<string>(task?.status || 'OPEN');
     const [comment, setComment] = useState('');
     const [isStatusChanged, setIsStatusChanged] = useState(false);
@@ -91,6 +92,53 @@ const ActionModal = ({ task, onClose }: ActionModalProps) => {
     const buttonText = isStatusChanged 
         ? 'Update Status' 
         : (comment.trim() ? 'Update Comment' : 'Cancel');
+
+    const handleKeyNavigation = useCallback((event: KeyboardEvent) => {
+        
+        if (!task || tasks.length === 0) {
+            return;
+        }
+
+        const currentIndex = tasks.findIndex(t => t.id === task.id);
+        
+        if (currentIndex === -1) {
+            return;
+        }
+
+        switch (event.key) {
+            case 'ArrowLeft': {
+                event.preventDefault();
+                const prevIndex = currentIndex > 0 ? currentIndex - 1 : tasks.length - 1;
+                const prevTask = tasks[prevIndex];
+                setCurrentViewedTask(prevTask);
+                onTaskChange(prevTask);
+                setStatus(prevTask.status);
+                setComment('');
+                setIsStatusChanged(false);
+                setError('');
+                break;
+            }
+            case 'ArrowRight': {
+                event.preventDefault();
+                const nextIndex = currentIndex < tasks.length - 1 ? currentIndex + 1 : 0;
+                const nextTask = tasks[nextIndex];
+                setCurrentViewedTask(nextTask);
+                onTaskChange(nextTask);
+                setStatus(nextTask.status);
+                setComment('');
+                setIsStatusChanged(false);
+                setError('');
+                break;
+            }
+        }
+    }, [task, tasks, setCurrentViewedTask, onTaskChange]);
+
+    useEffect(() => {
+        if (task) {
+            window.addEventListener('keydown', handleKeyNavigation);
+            return () => window.removeEventListener('keydown', handleKeyNavigation);
+        }
+    }, [handleKeyNavigation, task]);
 
     return (
         <Modal 

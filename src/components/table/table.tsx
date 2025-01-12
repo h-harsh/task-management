@@ -311,7 +311,8 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
             <ActionModal 
                 task={selectedTask}
                 onClose={handleCloseModal}
-                currentStatus={currentStatus}
+                tasks={filteredAndSortedTasks}
+                onTaskChange={setSelectedTask}
             />
         </div>
     );
