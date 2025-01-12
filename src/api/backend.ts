@@ -24,7 +24,7 @@ function fetchTasks({ status = "OPEN", page = { size: PAGE_SIZE, offset: 0 } }: 
         const filteredTasks = tasks.filter(task => task.status === status);
         const paginatedTasks = filteredTasks.slice(
             page.offset,
-            page.offset + page.size + 10
+            page.offset + page.size
         );
         resolve({
             tasks: paginatedTasks,

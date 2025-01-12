@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { useTaskStore } from '../store';
 import { fetchTasksHandler } from '../api/handlers';
 import { ITaskStatus, ITask } from '../types';
@@ -10,6 +10,7 @@ const useTasksFetch = (status: ITaskStatus) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const { data, loading, error } = fetchTasksState;
+  const isInitialMount = useRef(true);
 
   const fetchTask = useCallback(({ status, page }: { 
     status: ITaskStatus, 
@@ -21,16 +22,30 @@ const useTasksFetch = (status: ITaskStatus) => {
     });
   }, []);
 
-  // Initial fetch
+  // Reset state when status changes
   useEffect(() => {
     setAllTasks([]);
     setCurrentPage(0);
     setHasMore(true);
     
-    fetchTask({ 
-      status, 
-      page: { size: PAGE_SIZE, offset: 0 } 
-    });
+    // Only fetch if it's not the initial mount
+    if (!isInitialMount.current) {
+      fetchTask({ 
+        status, 
+        page: { size: PAGE_SIZE, offset: 0 } 
+      });
+    }
+    isInitialMount.current = false;
+  }, [status, fetchTask]);
+
+  // Initial fetch
+  useEffect(() => {
+    if (isInitialMount.current) {
+      fetchTask({ 
+        status, 
+        page: { size: PAGE_SIZE, offset: 0 } 
+      });
+    }
   }, [status, fetchTask]);
 
   // Update allTasks when new data arrives
