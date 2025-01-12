@@ -33,6 +33,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         direction: 'asc' | 'desc' | null;
     }>({ key: null, direction: null });
     const searchFilter = useTaskStore((state) => state.searchFilter);
+    const currentViewedTask = useTaskStore((state) => state.currentViewedTask);
 
     const { ref: bottomRef, entry: bottomEntry } = useIntersection({
         threshold: BUFFER_THRESHOLD,
@@ -133,6 +134,12 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
 
     const filteredAndSortedTasks = useMemo(() => {
         let filtered = [...tasks];
+        
+        // Remove the currently viewed task if its status doesn't match current tab
+        if (currentViewedTask && currentViewedTask.status !== currentStatus) {
+            filtered = filtered.filter(task => task.id !== currentViewedTask.id);
+        }
+        
         if (searchFilter?.value) {
             filtered = filtered.filter(task => {
                 const value = task[searchFilter.column as keyof ITask];
@@ -150,7 +157,6 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                 
                 return stringValue.includes(searchValue);
             });
-            
         }
 
         // Apply sorting
@@ -167,7 +173,7 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         }
 
         return filtered;
-    }, [tasks, sortConfig, searchFilter]);
+    }, [tasks, sortConfig, searchFilter, currentViewedTask, currentStatus]);
 
     console.log('Rendering table with:', {
         totalTasks: tasks.length,

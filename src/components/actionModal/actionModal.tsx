@@ -2,6 +2,7 @@ import { Modal, Text, Group, Button, Stack, Select, Textarea, Alert } from '@man
 import { ITask } from '../../types';
 import { useState, useEffect } from 'react';
 import { updateTaskStatusHandler, updateTaskCommentHandler } from '../../api/handlers';
+import { useTaskStore } from '../../store/taskStore';
 
 interface ActionModalProps {
     task: ITask | null;
@@ -9,11 +10,12 @@ interface ActionModalProps {
     currentStatus: string;
 }
 
-const ActionModal = ({ task, onClose }: ActionModalProps) => {
+const ActionModal = ({ task, onClose, currentStatus }: ActionModalProps) => {
     const [status, setStatus] = useState<string>(task?.status || 'OPEN');
     const [comment, setComment] = useState('');
     const [isStatusChanged, setIsStatusChanged] = useState(false);
     const [error, setError] = useState('');
+    const { updateCurrentViewedTask, setCurrentViewedTask } = useTaskStore();
 
     useEffect(() => {
         if (task) {
@@ -21,8 +23,9 @@ const ActionModal = ({ task, onClose }: ActionModalProps) => {
             setComment('');
             setIsStatusChanged(false);
             setError('');
+            setCurrentViewedTask(task);
         }
-    }, [task]);
+    }, [task, setCurrentViewedTask]);
 
     const handleStatusChange = (value: string | null) => {
         if (!value) {return;}
@@ -32,6 +35,12 @@ const ActionModal = ({ task, onClose }: ActionModalProps) => {
 
     const handleSubmit = () => {
         if (!task) {return;}
+
+        // If there are no changes, treat it as cancel
+        if (!isStatusChanged && !comment.trim()) {
+            onClose();
+            return;
+        }
 
         if (isStatusChanged && !comment.trim()) {
             setError('Comment is required when changing status');
@@ -45,20 +54,39 @@ const ActionModal = ({ task, onClose }: ActionModalProps) => {
                     newStatus: status,
                     comment: comment.trim()
                 });
+                
+                // Update the current viewed task in the store
+                updateCurrentViewedTask({
+                    status,
+                    comment: comment.trim(),
+                    updated_at: new Date().toISOString()
+                });
             } else if (comment.trim()) {
                 updateTaskCommentHandler({
                     id: task.id,
                     comment: comment.trim()
                 });
+                
+                // Update just the comment in the store
+                updateCurrentViewedTask({
+                    comment: comment.trim(),
+                    updated_at: new Date().toISOString()
+                });
             }
-            onClose();
+            
+            // Don't close the modal
+            setComment('');
+            setIsStatusChanged(false);
+            setError('');
         } catch (error) {
             setError(error instanceof Error ? error.message : 'An error occurred');
         }
     };
 
     const isSubmitDisabled = isStatusChanged && !comment.trim();
-    const buttonText = isStatusChanged ? 'Update Status' : (comment.trim() ? 'Update Comment' : 'Close');
+    const buttonText = isStatusChanged 
+        ? 'Update Status' 
+        : (comment.trim() ? 'Update Comment' : 'Cancel');
 
     return (
         <Modal 
@@ -123,9 +151,6 @@ const ActionModal = ({ task, onClose }: ActionModalProps) => {
                     )}
 
                     <Group justify="flex-end" mt="md">
-                        <Button variant="outline" onClick={onClose}>
-                            Cancel
-                        </Button>
                         <Button 
                             onClick={handleSubmit}
                             disabled={isSubmitDisabled}
