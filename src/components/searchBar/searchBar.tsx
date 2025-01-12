@@ -1,31 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Group, TextInput, Select, ActionIcon } from '@mantine/core';
 import { IconSearch, IconX } from '@tabler/icons-react';
 import { TABLE_HEADERS } from '../../constants/table';
+import { useTaskStore } from '../../store/taskStore';
 
-interface SearchBarProps {
-    onSearch: (column: string, value: string) => void;
-}
+const SearchBar = () => {
+    const { searchFilter, setSearchFilter, clearSearch } = useTaskStore();
+    const [searchColumn, setSearchColumn] = useState<string | null>(searchFilter.column);
+    const [searchValue, setSearchValue] = useState(searchFilter.value);
 
-const SearchBar = ({ onSearch }: SearchBarProps) => {
-    const [searchColumn, setSearchColumn] = useState<string | null>('name');
-    const [searchValue, setSearchValue] = useState('');
+    // Keep local state in sync with store
+    useEffect(() => {
+        setSearchColumn(searchFilter.column);
+        setSearchValue(searchFilter.value);
+    }, [searchFilter]);
 
     const handleSearch = (value: string) => {
         setSearchValue(value);
-        onSearch(searchColumn || 'name', value);
+        setSearchFilter({
+            column: searchColumn || 'name',
+            value
+        });
     };
 
     const handleColumnChange = (column: string | null) => {
         setSearchColumn(column);
-        if (searchValue) {
-            onSearch(column || 'name', searchValue);
-        }
+        setSearchFilter({
+            column: column || 'name',
+            value: searchValue
+        });
     };
 
-    const clearSearch = () => {
+    const handleClearSearch = () => {
         setSearchValue('');
-        onSearch(searchColumn || 'name', '');
+        setSearchColumn('name');
+        clearSearch();
     };
 
     return (
@@ -49,7 +58,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
                 leftSection={<IconSearch size={16} />}
                 rightSection={
                     searchValue && (
-                        <ActionIcon size="sm" variant="subtle" onClick={clearSearch}>
+                        <ActionIcon size="sm" variant="subtle" onClick={handleClearSearch}>
                             <IconX size={16} />
                         </ActionIcon>
                     )

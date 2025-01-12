@@ -18,7 +18,20 @@ interface TaskStore {
     setFetchTasksState: (state: any) => void;
     setCurrentViewedTask: (task: ITask | null) => void;
     updateCurrentViewedTask: (updates: Partial<ITask>) => void;
+    clearSearch: () => void;
 }
+
+// Get initial search state from localStorage
+const getInitialSearchState = (): SearchFilter => {
+    const savedSearch = localStorage.getItem('taskSearchFilter');
+    if (savedSearch) {
+        const parsed = JSON.parse(savedSearch) as SearchFilter;
+        if (typeof parsed.column === 'string' && typeof parsed.value === 'string') {
+            return parsed;
+        }
+    }
+    return { column: 'name', value: '' };
+};
 
 const useTaskStore = create<TaskStore>((set) => ({
     fetchTasksState: {
@@ -26,12 +39,20 @@ const useTaskStore = create<TaskStore>((set) => ({
         loading: false,
         error: null
     },
-    searchFilter: { column: 'name', value: '' },
+    searchFilter: getInitialSearchState(),
     currentViewedTask: null,
     setSearchFilter: (filter: SearchFilter) => {
+        localStorage.setItem('taskSearchFilter', JSON.stringify(filter));
         set((state) => ({
             ...state,
             searchFilter: filter
+        }));
+    },
+    clearSearch: () => {
+        localStorage.removeItem('taskSearchFilter');
+        set((state) => ({
+            ...state,
+            searchFilter: { column: 'name', value: '' }
         }));
     },
     setFetchTasksState: (state) => set((prev) => ({ 
