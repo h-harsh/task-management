@@ -6,7 +6,7 @@ import { toTitleCase } from "../../utils";
 import ActionModal from "../actionModal/actionModal";
 import { useTasksFetch } from "../../hooks";
 import { useIntersection } from '@mantine/hooks';
-import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
+import { IconTriangleFilled, IconTriangleInvertedFilled } from '@tabler/icons-react';
 import { useTaskStore } from '../../store/taskStore';
 
 const BUFFER_THRESHOLD = 0.5;
@@ -133,13 +133,17 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
     };
 
     const filteredAndSortedTasks = useMemo(() => {
-        let filtered = [...tasks];
+        // First sort by created_at as base ordering
+        let filtered = [...tasks].sort((a, b) => 
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
         
         // Remove the currently viewed task if its status doesn't match current tab
         if (currentViewedTask && currentViewedTask.status !== currentStatus) {
             filtered = filtered.filter(task => task.id !== currentViewedTask.id);
         }
         
+        // Apply search filter
         if (searchFilter?.value) {
             filtered = filtered.filter(task => {
                 const value = task[searchFilter.column as keyof ITask];
@@ -159,9 +163,15 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
             });
         }
 
-        // Apply sorting
+        // Apply user-selected sorting if any
         if (sortConfig.key && sortConfig.direction) {
             filtered.sort((a: any, b: any) => {
+                if (sortConfig.key === 'created_at') {
+                    return sortConfig.direction === 'asc'
+                        ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                        : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                }
+
                 if (a[sortConfig.key] < b[sortConfig.key]) {
                     return sortConfig.direction === 'asc' ? -1 : 1;
                 }
@@ -175,11 +185,6 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
         return filtered;
     }, [tasks, sortConfig, searchFilter, currentViewedTask, currentStatus]);
 
-    console.log('Rendering table with:', {
-        totalTasks: tasks.length,
-        filteredTasks: filteredAndSortedTasks.length,
-        searchFilter
-    });
 
     if (loading && tasks.length === 0) { return <Loader size="xl" />; }
     if (error) { return <div>Error: {error}</div>; }
@@ -208,24 +213,26 @@ const Table = ({ currentStatus }: { currentStatus: ITaskStatus }) => {
                                         <Flex direction="column" gap={0}>
                                             <ActionIcon 
                                                 size="xs" 
-                                                variant="subtle"
+                                                variant="transparent"
                                                 onClick={() => handleSort(header)}
+                                                h="auto"
+                                                mih="auto"
                                             >
-                                                <IconChevronUp 
-                                                    color={sortConfig.key === header && sortConfig.direction === 'asc' ? 'blue' : '#666'} 
-                                                    size={16} 
-                                                    stroke={3}
+                                                <IconTriangleFilled 
+                                                    color={sortConfig.key === header && sortConfig.direction === 'asc' ? 'primary' : '#ced4da'} 
+                                                    size={8} 
                                                 />
                                             </ActionIcon>
                                             <ActionIcon 
                                                 size="xs" 
-                                                variant="subtle"
+                                                variant="transparent"
                                                 onClick={() => handleSort(header)}
+                                                h="auto"
+                                                mih="auto"
                                             >
-                                                <IconChevronDown
-                                                    color={sortConfig.key === header && sortConfig.direction === 'desc' ? 'blue' : '#666'} 
-                                                    size={16} 
-                                                    stroke={3}
+                                                <IconTriangleInvertedFilled
+                                                    color={sortConfig.key === header && sortConfig.direction === 'desc' ? 'primary' : '#ced4da'} 
+                                                    size={8} 
                                                 />
                                             </ActionIcon>
                                         </Flex>
