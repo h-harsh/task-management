@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Group, TextInput, Select, ActionIcon } from '@mantine/core';
 import { IconSearch, IconX } from '@tabler/icons-react';
+import { useHotkeys } from '@mantine/hooks';
 import { TABLE_HEADERS } from '../../constants/table';
 import { useUiStore } from '../../store';
 
@@ -8,6 +9,16 @@ const SearchBar = () => {
     const { searchFilter, setSearchFilter, clearSearch } = useUiStore();
     const [searchColumn, setSearchColumn] = useState<string | null>(searchFilter.column);
     const [searchValue, setSearchValue] = useState(searchFilter.value);
+    const searchInputRef = useRef<HTMLInputElement>(null);
+
+    // Register hotkeys
+    useHotkeys([
+        ['/', (event) => {
+            // Prevent "/" character from being typed when focusing
+            event.preventDefault();
+            searchInputRef.current?.focus();
+        }],
+    ]);
 
     // To keep local state in sync with store
     useEffect(() => {
@@ -51,8 +62,9 @@ const SearchBar = () => {
                 style={{ width: 150 }}
             />
             <TextInput
+                ref={searchInputRef}
                 size="sm"
-                placeholder="Search..."
+                placeholder="Search... (Press '/' to focus)"
                 value={searchValue}
                 onChange={(e) => handleSearch(e.target.value)}
                 leftSection={<IconSearch size={16} />}

@@ -28,11 +28,11 @@ const ActionModal = ({ task, onClose, tasks, onTaskChange }: ActionModalProps) =
         }
     }, [task, setCurrentViewedTask]);
 
-    const handleStatusChange = (value: string | null) => {
+    const handleStatusChange = useCallback((value: string | null) => {
         if (!value) {return;}
         setStatus(value);
         setIsStatusChanged(value !== task?.status);
-    };
+    }, [task?.status]);
 
     const handleSubmit = () => {
         if (!task) {return;}
@@ -140,6 +140,59 @@ const ActionModal = ({ task, onClose, tasks, onTaskChange }: ActionModalProps) =
         }
     }, [handleKeyNavigation, task]);
 
+    const handleKeyStatusChange = useCallback((event: KeyboardEvent) => {
+        if (!task) {return;}
+
+        switch (event.key) {
+            case '1':
+                handleStatusChange('OPEN');
+                break;
+            case '2':
+                handleStatusChange('IN_PROGRESS');
+                break;
+            case '3':
+                handleStatusChange('CLOSED');
+                break;
+            case 'ArrowLeft': {
+                event.preventDefault();
+                const prevIndex = tasks.findIndex(t => t.id === task.id) > 0 ? tasks.findIndex(t => t.id === task.id) - 1 : tasks.length - 1;
+                const prevTask = tasks[prevIndex];
+                setCurrentViewedTask(prevTask);
+                onTaskChange(prevTask);
+                setStatus(prevTask.status);
+                setComment('');
+                setIsStatusChanged(false);
+                setError('');
+                break;
+            }
+            case 'ArrowRight': {
+                event.preventDefault();
+                const nextIndex = tasks.findIndex(t => t.id === task.id) < tasks.length - 1 ? tasks.findIndex(t => t.id === task.id) + 1 : 0;
+                const nextTask = tasks[nextIndex];
+                setCurrentViewedTask(nextTask);
+                onTaskChange(nextTask);
+                setStatus(nextTask.status);
+                setComment('');
+                setIsStatusChanged(false);
+                setError('');
+                break;
+            }
+        }
+    }, [task, handleStatusChange, tasks, onTaskChange, setCurrentViewedTask]);
+
+    useEffect(() => {
+        if (task) {
+            window.addEventListener('keydown', handleKeyStatusChange);
+            return () => window.removeEventListener('keydown', handleKeyStatusChange);
+        }
+    }, [handleKeyStatusChange, task]);
+
+    const statusOptions = [
+        { value: 'OPEN', label: '(1) Open' },
+        { value: 'IN_PROGRESS', label: '(2) In Progress' },
+        { value: 'CLOSED', label: '(3) Closed' }
+    ];
+
     return (
         <Modal 
             opened={!!task} 
@@ -170,14 +223,10 @@ const ActionModal = ({ task, onClose, tasks, onTaskChange }: ActionModalProps) =
                     </Group>
 
                     <Select
-                        label="Status"
+                        label="Status (Use number keys 1-3 to change)"
                         value={status}
                         onChange={handleStatusChange}
-                        data={[
-                            { value: 'OPEN', label: 'Open' },
-                            { value: 'IN_PROGRESS', label: 'In Progress' },
-                            { value: 'CLOSED', label: 'Closed' }
-                        ]}
+                        data={statusOptions}
                     />
 
                     {task.comment && (
