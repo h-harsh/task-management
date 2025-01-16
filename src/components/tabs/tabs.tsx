@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Tabs as MantineTabs, Badge, Button, Group, Box, Flex } from '@mantine/core';
+import { Tabs as MantineTabs, Badge, Button, Group, Flex } from '@mantine/core';
 import { useApiStore, useUiStore } from '../../store';
 import { useEffect } from 'react';
 import { fetchTaskCountsHandler } from '../../api/handlers';
